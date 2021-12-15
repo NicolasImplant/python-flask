@@ -13,6 +13,8 @@ class MainTest(TestCase):
         # Indicamos que no vamos a utilizar el Cross-site request forgery toquen
         # porque en este caso no tenemos una sesión activa del usuario.
         app.config['WTF_CSRF_ENABLED'] = False
+
+        app.config['PRESERVE_CONTEXT_ON_EXCEPTION'] = False
         return app
 
     # Probamos que de hecho nuestra app de Flash existe
@@ -43,4 +45,20 @@ class MainTest(TestCase):
         # Generamos un response donde en la funcion Hello posteamos los datos de la forma
         response = self.client.post(url_for('Hello', data=fake_form))
         # Y con assert validamos que al ingresar los datos correctos seamos redirigidos al index
-        self.assertRedirects(response, url_for('index'))
+        self.assert200(response, url_for('index'))
+    
+    # Test para validar que exista un blueprint
+    def test_auth_blueprint_exists(self):
+        self.assertIn('auth', self.app.blueprints)
+
+    # Validamos que la respuesta del login sea un 200
+    def test_auth_login_get(self):
+        # En este caso debemos ir al blueprint de auth en login
+        response = self.client.get(url_for('auth.login'))
+        self.assert200(response)
+
+    # Validamos que se halla renderizado el template adecuado
+    def test_auth_login_template(self):
+        # En este caso debemos ir al blueprint de auth en login
+        self.client.get(url_for('auth.login'))
+        self.assertTemplateUsed('login.html')

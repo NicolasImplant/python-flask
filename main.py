@@ -1,29 +1,15 @@
-from flask import Flask, request, make_response ,redirect, render_template, session, url_for, flash
-from flask_bootstrap import Bootstrap
-from flask_wtf import FlaskForm
-from wtforms.fields import StringField, PasswordField, SubmitField
-from wtforms.validators import DataRequired
+from flask import request, make_response ,redirect, render_template, session, url_for, flash
 import unittest
+from app import create_app
+from app.forms import LoginForm
 
-# Se crea una instancia de flask
-app = Flask(__name__)
-# Se instancia Bootstrap para implementarlo en la navigation bar
-bootstrap = Bootstrap(app)
-# Utilizamos una propiedad de app para generar sesions, de esta manera es posible proteger la información de usuario
-app.config['SECRET_KEY'] = 'TOP SECRET'
-
+app = create_app()
 
 to_do = ['Add filter at coffee maker',
          'Grind coffee beans',
          'Pour enough water into the filter',
          'Let it drain into your cup or coffee pot']
 
-# Se crea la clase para realizar el formulario login, en este caso se pide al ususario y contraseña, el parametro validators
-# genera el caracter oblifatorio de los parametros ingresados a traves de crear instancias de DataRequired
-class LoginForm(FlaskForm):
-    username = StringField('Username:', validators=[DataRequired()])
-    password = PasswordField('Password:', validators=[DataRequired()])
-    submit = SubmitField('Submit')
 
 # Generamos comandos del command line interface
 @app.cli.command()
