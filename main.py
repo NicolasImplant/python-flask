@@ -1,8 +1,9 @@
-from flask import Flask, request, make_response ,redirect, render_template, session, url_for
+from flask import Flask, request, make_response ,redirect, render_template, session, url_for, flash
 from flask_bootstrap import Bootstrap
 from flask_wtf import FlaskForm
 from wtforms.fields import StringField, PasswordField, SubmitField
 from wtforms.validators import DataRequired
+import unittest
 
 # Se crea una instancia de flask
 app = Flask(__name__)
@@ -24,6 +25,14 @@ class LoginForm(FlaskForm):
     password = PasswordField('Password:', validators=[DataRequired()])
     submit = SubmitField('Submit')
 
+# Generamos comandos del command line interface
+@app.cli.command()
+def test():
+    # Los test van a ser todo el contenido del directorio test
+    tests = unittest.TestLoader().discover('tests')
+    # Ejecutamos todos los test que fueron encontrados
+    run = unittest.TextTestRunner()
+    run.run(tests)
 
 # Se crean los metodos de error para manejar los errores de busqueda y de código
 @app.errorhandler(404)
@@ -77,6 +86,7 @@ def Hello():
         username = login_form.username.data
         # Guardamos el user name en la sesion como lo hicimos para user_ip
         session['username'] = username
+        flash('Username register with successful')
 
         # Realizamos una redireccion directo a index, debemos importar el url_for desde flask para usarlo en main
         # si nos realizan un post y la forma es valida vamos a guardar en username en la sesion
