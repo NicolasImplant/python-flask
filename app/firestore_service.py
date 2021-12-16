@@ -5,7 +5,7 @@ import firebase_admin
 # con firestore 
 from firebase_admin import credentials, firestore
 
-project_id = 'flask-with-python'
+project_id = 'flask-with-python-335223'
 # Este es el metodo mediante el cual creamos nuestras credenciales
 credential = credentials.ApplicationDefault()
 # Firebase admin es la función que permite realizar el login con nuestra credencial
