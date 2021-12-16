@@ -1,16 +1,10 @@
 from flask import request, make_response ,redirect, render_template, session, url_for, flash
 import unittest
 from app import create_app
-from app.firestore_service import get_users
+from app.firestore_service import get_users, get_to_do_list
 
 
 app = create_app()
-
-to_do = ['Add filter in coffee maker',
-         'Grind coffee beans',
-         'Pour enough water into the filter',
-         'Let it drain into your cup or coffee pot']
-
 
 # Generamos comandos del command line interface
 @app.cli.command()
@@ -61,14 +55,15 @@ def Hello():
     # Creamos un diccionario con las variables de contexto necesarias en el funcionamiento del template
     context = {
         'user_ip': user_ip,
-        'to_do_list': to_do,
+        'to_do_list': get_to_do_list(user_id=username),
         'username' : username
     }
     # Importamos el metodo get users e imprimimos en consola su contenido con un ciclo for
     users = get_users()
 
     for user in users:
-        print(user)
+        print(user.id)
+        print(user.to_dict()['password'])
 
     # El doble '**' indica que el diccionario context será expandido para acceder a las keys:values, sin uso de la notacion .value
     return render_template('hello.html', **context)

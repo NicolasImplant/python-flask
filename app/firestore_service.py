@@ -21,3 +21,9 @@ db = firestore.client()
 def get_users():
     # con el metodo .get() traemos la coleccion users de firestore
     return db.collection('users').get()
+
+# Este metodo trae consigo todos los To Do list de la coleccion de cada usuario
+
+def get_to_do_list(user_id):
+    # Manejamos la misma estructura de Firestore basada en colecciones documentos y colecciones.
+    return db.collection('users').document(user_id).collection('To do').get()
