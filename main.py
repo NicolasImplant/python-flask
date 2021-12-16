@@ -2,6 +2,7 @@ from flask import request, make_response ,redirect, render_template, session, ur
 import unittest
 from app import create_app
 from app.firestore_service import get_users, get_to_do_list
+from flask_login import login_required
 
 
 app = create_app()
@@ -40,6 +41,8 @@ def index():
 
 # En los argumentos de la ruta agregamos una lista de metodos que va a aceptar, en este caso GET - POST
 @app.route('/hello', methods = ['GET'])
+# Este decorador protege la ruta para que siempre sea necesario iniciar una sesion para acceder. 
+@login_required
 def Hello():
     # Modificamos la ruta hello para que obtenga la IP del ususario desde la cookie y no desde el request
     # user_ip =  request.cookies.get('user_ip')
@@ -58,13 +61,6 @@ def Hello():
         'to_do_list': get_to_do_list(user_id=username),
         'username' : username
     }
-    # Importamos el metodo get users e imprimimos en consola su contenido con un ciclo for
-    users = get_users()
-
-    for user in users:
-        print(user.id)
-        print(user.to_dict()['password'])
-
     # El doble '**' indica que el diccionario context será expandido para acceder a las keys:values, sin uso de la notacion .value
     return render_template('hello.html', **context)
 
