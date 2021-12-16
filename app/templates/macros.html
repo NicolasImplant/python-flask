@@ -8,7 +8,7 @@
 </head>
 <body>
     {% macro render_to_do(do) %}
-        <li>Description: {{do}}</li>
+        <li>Description: {{do.to_dict().description}}</li>
     {% endmacro %}
 </body>
 </html>
