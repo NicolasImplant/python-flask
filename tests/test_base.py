@@ -37,15 +37,10 @@ class MainTest(TestCase):
     
     # Validamos como realizar un post de la manera correcta
     def test_hello_post(self):
-        # En este caso es necesario crear una forma para los espacios del formulario
-        fake_form = {
-            'username': 'Fakeusername',
-            'password': 'Fakepassword'
-        }
         # Generamos un response donde en la funcion Hello posteamos los datos de la forma
-        response = self.client.post(url_for('Hello', data=fake_form))
+        response = self.client.post(url_for('Hello'))
         # Y con assert validamos que al ingresar los datos correctos seamos redirigidos al index
-        self.assert200(response, url_for('index'))
+        self.assertTrue(response.status_code, 405)
     
     # Test para validar que exista un blueprint
     def test_auth_blueprint_exists(self):
@@ -62,3 +57,12 @@ class MainTest(TestCase):
         # En este caso debemos ir al blueprint de auth en login
         self.client.get(url_for('auth.login'))
         self.assertTemplateUsed('login.html')
+
+    def test_auth_login_post(self):
+        # En este caso es necesario crear una forma para los espacios del formulario
+        fake_form = {
+            'username': 'Fakeusername',
+            'password': 'Fakepassword'
+        }
+        response = self.client.post(url_for('auth.login'), data=fake_form)
+        self.assertRedirects(response, url_for('index'))
