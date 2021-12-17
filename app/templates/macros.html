@@ -1,3 +1,5 @@
+{% import 'bootstrap/wtf.html' as wtf %}
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -7,8 +9,13 @@
     <title>Macros</title>
 </head>
 <body>
-    {% macro render_to_do(do) %}
-        <li>Description: {{do.to_dict().description}}</li>
+    {% macro render_to_do(do, delete_form, update_form) %}
+        <li class= 'list-group-item'>
+            <span class= badge>{{ do.to_dict().done }}</span>
+            Description: {{do.to_dict().description}}
+            {{ wtf.quick_form(delete_form, action=url_for('delete', to_do_id = do.id)) }}
+            {{ wtf.quick_form(update_form, action=url_for('update', to_do_id = do.id, done=do.to_dict().done)) }}
+        </li>
     {% endmacro %}
 </body>
 </html>

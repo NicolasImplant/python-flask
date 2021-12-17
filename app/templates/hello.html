@@ -28,13 +28,19 @@ Welcome
         <a href="{{url_for('index')}}">Go Home</a>
     {% endif %}
 
+    <div class="container"> 
+        <h2>Create a new task</h2>
+            {{ wtf.quick_form(to_do_form) }}
+    </div>   
+
+    <ul class = "list-group">
+        {% for do in to_do_list %} 
+            {{macros.render_to_do(do, delete_form, update_form)}}               
+        {% endfor %}
     </ul>
-    <ol>
-    {% for do in to_do_list %}
-            {{macros.render_to_do(do)}}               
-    {% endfor %}
-    </ol>
     {% endblock %}
+
+
 </body>
 </html>
 

@@ -10,3 +10,17 @@ class LoginForm(FlaskForm):
     username = StringField('Username:', validators=[DataRequired()])
     password = PasswordField('Password:', validators=[DataRequired()])
     submit = SubmitField('Submit')
+
+# Clase con la descripcion de la tarea
+class ToDoForm(FlaskForm):
+    description = StringField('Description', validators=DataRequired())
+    submit = SubmitField('Create')
+
+# Clase para borar una tarea
+class DeleteToDoForm(FlaskForm):
+    submit = SubmitField('Delete')
+
+
+# Clase para actualizar una tarea
+class UpdateToDoForm(FlaskForm):
+    submit = SubmitField('Update')

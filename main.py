@@ -1,9 +1,9 @@
 from flask import request, make_response ,redirect, render_template, session, url_for, flash
 import unittest
 from app import create_app
-from app.firestore_service import get_users, get_to_do_list
+from app.firestore_service import get_users, get_to_do_list, put_ToDo, delete_to_do, update_to_do
 from flask_login import login_required, current_user
-
+from app.forms import DeleteToDoForm, ToDoForm, UpdateToDoForm
 
 app = create_app()
 
@@ -40,7 +40,7 @@ def index():
     return response
 
 # En los argumentos de la ruta agregamos una lista de metodos que va a aceptar, en este caso GET - POST
-@app.route('/hello', methods = ['GET'])
+@app.route('/hello', methods = ['GET', 'POST'])
 # Este decorador protege la ruta para que siempre sea necesario iniciar una sesion para acceder. 
 @login_required
 def Hello():
@@ -55,12 +55,43 @@ def Hello():
     # obtenemos el username directamente de la sesion y lo agregamos al contexto
     username = current_user.id
 
+    to_do_form = ToDoForm()
+    delete_form = DeleteToDoForm()
+    update_form = UpdateToDoForm()
+
     # Creamos un diccionario con las variables de contexto necesarias en el funcionamiento del template
     context = {
         'user_ip': user_ip,
         'to_do_list': get_to_do_list(user_id=username),
-        'username' : username
+        'username' : username,
+        'to_do_form': to_do_form,
+        'delete_form': delete_form,
+        'update_form': update_form,
     }
+    # Si la figura de tarea es valida se guarda en firestore y en pantalla aparece un mensaje de comprobación
+    if to_do_form.validate_on_submit():
+        put_ToDo(user_id=username, description=to_do_form.description.data)
+        flash('Task created successfully ')
+
+        return redirect(url_for('hello'))
+
     # El doble '**' indica que el diccionario context será expandido para acceder a las keys:values, sin uso de la notacion .value
     return render_template('hello.html', **context)
+
+# La ruta delete unicamente requiere el metodo post
+@app.route('/to_do/delete/<to_do_id>', methods = ['POST'])
+# La funcion delete recibe el id de la tarea
+def delete(to_do_id):
+    # EL id de l usuario lo obtenemos con el metodo curret_user
+    user_id = current_user.id
+    # importamos y ejecutamos la funcion que se va a encargar de borrar la tarea
+    delete_to_do(user_id=user_id, to_do_id=to_do_id)
+    # Finalemente redirigimos al inicio    
+    return redirect(url_for('hello'))
+
+@app.route('/to_do/update/<to_do_id>/<int:done>', methods = ['POST'])
+def update(to_do_id, done):
+    user_id = current_user.id
+    update_to_do(user_id=user_id, to_do_id=to_do_id, done=done)
+    return redirect(url_for('hello'))
 
