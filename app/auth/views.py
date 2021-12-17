@@ -2,8 +2,10 @@ from flask import render_template, flash, redirect, url_for
 from flask_login import login_user, login_required, logout_user
 from app.forms import LoginForm
 from . import auth
-from app.firestore_service import get_user
+from app.firestore_service import get_user, user_put
 from app.models import UserData, UserModel
+# Importante: Este metodo realiza el hash del password de la nueva cuenta para eliminar vacios de seguridad
+from werkzeug.security import generate_password_hash
 
 @auth.route('/login', methods = ['GET', 'POST'])
 def login():
@@ -53,6 +55,52 @@ def login():
         return redirect(url_for('index'))
 
     return render_template('login.html', **context)
+
+
+
+# Función para crear un usuario nuevo en la app
+@auth.route('signup', methods=['GET', 'POST'])
+def signup():
+    # Podemos reutilizar la Clase Loginform() su estructura es similar a la que necesitamos
+    signup_form =LoginForm()
+
+    # Para ser cosistentes con el estilo del código enviaremos la forma como un diccionario expandido
+    context = {
+        'signup_form': signup_form
+    }
+    # Validamos los datos con los que creamos la cuenta
+    if signup_form.validate_on_submit():
+        # Validamos que el nombre de usuario no exista
+        username = signup_form.username.data
+        password = signup_form.password.data
+
+        user_doc = get_user(user_id=username)
+
+        if user_doc.to_dict() is None:
+            # encriptamos el password de usuario
+            password_hash = generate_password_hash(password)
+            # Instanciamos con el modelo user data y los datos de usuario y contraseña
+            user_data = UserData(username, password_hash)
+            user_put(user_data)
+            # Una vez registrado en la base de datos creamos un nuevo modelo de ususario con los datos
+            user= UserModel(user_data)
+            # Como es natural una vez creado un nuevo ususario, instantaneamente el usuario esta login el la app
+            login_user(user)
+            # Le damos un mensaje de bienvenida 
+            flash('Welcome')
+
+            # El ususario es dirigido a la pagina de inicio
+            return redirect(url_for('hello'))
+        
+        else:
+            flash('User already exist')
+
+    # Rederizamos el template de signup
+    return render_template('signup.html', **context)
+
+
+
+
 
 # funcion para salir de la aplicacion se encuentra en el endpoint /logout
 @auth.route('logout')
