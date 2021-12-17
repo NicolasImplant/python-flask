@@ -1,7 +1,7 @@
 # Desde flask_login importamos UserMixin que contiene los metodos necesarios para la implementacion del login
 from flask_login import UserMixin
 # Importamos el metodo get_user desde firestore service
-from app.firestore_service import get_user
+from .firestore_service import get_user
 # User data es la clase que contendrá usuario y contraseña para realizar el login
 class UserData:
     def __init__(self, username, password):
@@ -10,10 +10,10 @@ class UserData:
         
 # La clase UserModel heredará todos los metodos ya implementados en UserMixin y validará los datos que han sido ingresados al usuario
 class UserModel(UserMixin):
-    '''
-    Param: user_data: UserData
-    '''
     def __init__(self, user_data):
+        '''
+        Parameters: user_data: Model UserData
+        '''
         self.id = user_data.username
         self.password = user_data.password
 

@@ -2,7 +2,7 @@ from flask import request, make_response ,redirect, render_template, session, ur
 import unittest
 from app import create_app
 from app.firestore_service import get_users, get_to_do_list
-from flask_login import login_required
+from flask_login import login_required, current_user
 
 
 app = create_app()
@@ -53,7 +53,7 @@ def Hello():
     #login_form = LoginForm()
 
     # obtenemos el username directamente de la sesion y lo agregamos al contexto
-    username = session.get('username')
+    username = current_user.id
 
     # Creamos un diccionario con las variables de contexto necesarias en el funcionamiento del template
     context = {
