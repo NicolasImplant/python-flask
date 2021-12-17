@@ -31,3 +31,9 @@ def get_user(user_id):
 def get_to_do_list(user_id):
     # Manejamos la misma estructura de Firestore basada en colecciones documentos y colecciones.
     return db.collection('users').document(user_id).collection('To do').get()
+
+# Este metodo no retorna nada en especifico, unicamente con los datos de usuario referencia el username en el documento users
+def user_put(user_data):
+    user_ref = db.collection('users').documents(user_data.username)
+    # adicionalmente envia un diccionario con la contraseña para su sub colecion password
+    user_ref.set({'password': user_data.password})
